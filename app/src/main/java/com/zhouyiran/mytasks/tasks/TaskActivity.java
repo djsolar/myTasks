@@ -11,10 +11,19 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.zhouyiran.mytasks.R;
+import com.zhouyiran.mytasks.data.TasksRepository;
+import com.zhouyiran.mytasks.data.local.TasksLocalDataSource;
+import com.zhouyiran.mytasks.data.remote.TasksRemoteDataSource;
+import com.zhouyiran.mytasks.utils.ActivityUtils;
 
 public class TaskActivity extends AppCompatActivity {
 
+    private static final String CURRENT_FILTERING_KEY = "CURRENT_FILTERING_KEY";
+
     private DrawerLayout mDrawerLayout;
+
+    private TasksPresenter mTasksPresenter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,7 +40,24 @@ public class TaskActivity extends AppCompatActivity {
         if(navigationView != null) {
             setupDrawerContent(navigationView);
         }
-        getSupportFragmentManager().beginTransaction().add(R.id.content_frame, TasksFragment.newInstance()).commit();
+        TasksFragment tasksFragment = (TasksFragment) getSupportFragmentManager().findFragmentById(R.id.content_frame);
+        if(tasksFragment == null) {
+            tasksFragment = TasksFragment.newInstance();
+            ActivityUtils.addFragmentToActivity(getSupportFragmentManager(), tasksFragment, R.id.content_frame);
+        }
+
+        mTasksPresenter = new TasksPresenter(TasksRepository.getInstance(TasksLocalDataSource.getInstance(this), TasksRemoteDataSource.getInstance()), tasksFragment);
+
+        if(savedInstanceState != null) {
+            TasksFilterType tasksFilterType = (TasksFilterType) savedInstanceState.getSerializable(CURRENT_FILTERING_KEY);
+            mTasksPresenter.setFiltering(tasksFilterType);
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putSerializable(CURRENT_FILTERING_KEY, mTasksPresenter.getFiltering());
+        super.onSaveInstanceState(outState);
     }
 
     private void setupDrawerContent(NavigationView navigationView) {

@@ -82,8 +82,7 @@ public class TasksFragment extends Fragment implements TasksContract.View {
             }
         });
 
-        FloatingActionButton fab = (FloatingActionButton) root.findViewById(R.id.fab);
-        fab.setImageResource(R.drawable.ic_add);
+        FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -237,6 +236,11 @@ public class TasksFragment extends Fragment implements TasksContract.View {
     @Override
     public void showLoadingTasksError() {
 
+    }
+
+    @Override
+    public boolean isActive() {
+        return false;
     }
 
     private void showMessage(String message) {

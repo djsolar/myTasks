@@ -38,6 +38,8 @@ public interface TasksContract {
         void showAllFilterLabel();
 
         void showLoadingTasksError();
+
+        boolean isActive();
     }
 
 
@@ -54,6 +56,8 @@ public interface TasksContract {
         void clearCompletedTasks();
 
         void setFiltering(TasksFilterType filterType);
+
+        TasksFilterType getFiltering();
 
         void openTaskDetails(Task task);
 
